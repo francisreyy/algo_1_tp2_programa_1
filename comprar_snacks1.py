@@ -1,4 +1,5 @@
 import tkinter
+import archivo
 root = tkinter.Tk()
 
 NOMBRE_DEL_CINE:str = "cine"
@@ -6,22 +7,17 @@ SUCURSAL: str = "abasto"
 PELICULA_SELECCIONADA: str = "marvel"
 POSTER_PELICULA: str = ""
 ASIENTOS_LIBRES: int = 0
-SNACKS: dict = {'doritos': '2500.00', 
-                'popcorn_xl': '3000.00', 
-                'popcorn_xxl': '4300.00', 
-                'papas_fritas': '1800.00',
-                'coca_cola_xl': '1500.00',
-                'coca_cola_xxl': '2350.00',
-                'chocolate 250g': '1100.00'}
+SNACKS_INFO = archivo.SNACKS
+SNACKS_DICT: dict = archivo.imprimir_endpoint_json(SNACKS_INFO)
 
 def add_cantidad_de_snacks(comprado, contador_row, valores_nuevos, add_boton) -> None:
     valor_total_snacks: int = 0
     print(comprado)
-    for i in SNACKS:
+    for i in SNACKS_DICT:
         for j in comprado:
             if i == j:
                 if not comprado[i] == 0:
-                    valor_unitario = float(SNACKS[i])
+                    valor_unitario = float(SNACKS_DICT[i])
                     valor_total = valor_unitario * comprado[i]
                     valores_nuevos[j] = valor_total
     print(valores_nuevos)
@@ -96,7 +92,7 @@ def contadores(comprado, i, contador_row):
 
 def crear_denuevo(comprado, contador_row)->None:
     contador_row[0] = 0
-    for i in SNACKS:
+    for i in SNACKS_DICT:
         contadores(comprado, i, contador_row)
         contador_row[0] += 1
 def main() -> None:

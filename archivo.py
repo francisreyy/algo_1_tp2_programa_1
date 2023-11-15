@@ -32,14 +32,14 @@ headers: dict[str, str] = {"Authorization": "Bearer " + TOKEN}
 ###########################################################################
 
 
-def imprimir_endpoint_json(endpoint: str, id_pelicula_o_cine: str = "", pelicula_o_cine : str = "") -> None:
+def imprimir_endpoint_json(endpoint: str, id_pelicula_o_cine: str = "", pelicula_o_cine : str = "") -> dict:
     """
     PRE: Procedimiento que recibe parte del link en strings (la id tiene que ser casteada a string 
     con "1" por ejemplo) y printea el json del endpoint
     """
     r = requests.get(URL + endpoint + id_pelicula_o_cine + pelicula_o_cine , headers=headers)
 
-    print(r.json())
+    return r.json()
 
 
 def asientos_disponibles(id_cine: int) -> int:
@@ -86,7 +86,9 @@ def main() -> None:
     #imprimir_endpoint_json(POSTERS, "1")
     #imprimir_endpoint_json(CINES, "1", PELICULAS)
     #imprimir_endpoint_json(PELICULAS, "2")
-    imprimir_endpoint_json(CINES)
+
+    #r = imprimir_endpoint_json(SNACKS)
+    #print(r)
     print(asientos_disponibles(ID_CINE_ABASTO))
 
 main()
