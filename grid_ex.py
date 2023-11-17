@@ -1,0 +1,21 @@
+import tkinter
+root = tkinter.Tk()
+TOP0 = tkinter.Frame(root, bg='green', width=500, height=100)
+TOP1 = tkinter.Frame(root, width=500, height=150)
+TOP1_IZQ = tkinter.Frame(TOP1, bg='blue', width=200, height=150)
+TOP1_DER = tkinter.Frame(TOP1, bg='red', width=300, height=150)
+TOP2 = tkinter.Frame(root, bg='green', width=500, height=70)
+BOTTOM0 = tkinter.Frame(root, width=500, height=200)
+BOTTOM0_IZQ = tkinter.Frame(BOTTOM0, bg='blue', width=200, height=300)
+BOTTOM0_DER = tkinter.Frame(BOTTOM0, bg='red', width=300, height=300)
+
+TOP0.grid(row=0)
+TOP1.grid(row=1)
+TOP1_IZQ.grid(row= 0, column=0)
+TOP1_DER.grid(row= 0, column=1)
+TOP2.grid(row=2)
+BOTTOM0.grid(row= 3)
+BOTTOM0_IZQ.grid(row= 0 ,column=0)
+BOTTOM0_DER.grid(row= 0, column=1)
+root.mainloop()
+    

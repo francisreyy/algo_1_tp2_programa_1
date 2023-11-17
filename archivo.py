@@ -89,6 +89,7 @@ def main() -> None:
 
     #r = imprimir_endpoint_json(SNACKS)
     #print(r)
+    #print(imprimir_endpoint_json(POSTERS))
     print(asientos_disponibles(ID_CINE_ABASTO))
 
 main()
