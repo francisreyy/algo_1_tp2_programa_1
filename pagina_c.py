@@ -4,6 +4,9 @@ import requests
 import json
 root = tkinter.Tk()
 
+#PAGINA D
+PANTALLA_D = tkinter.Frame(root, width=500, height=620)
+
 NOMBRE_DEL_CINE:str = "cine"
 SUCURSAL: str = "abasto"
 PELICULA_SELECCIONADA: str = "nombre de la pelicula"
@@ -99,10 +102,8 @@ def confirmar_compra(valores_nuevos_con_precios, comprado, snacks, cantidad_asie
                     valores_nuevos_con_precios[j] = {"cantidad": comprado[j], "valor total": float(snacks[i]) * comprado[j]}
     valores_nuevos_con_precios[f"asientos para {PELICULA_SELECCIONADA}"] = {"cantidad": cantidad_asientos[0], 
                                                         "valor total": VALOR_ASIENTOS * cantidad_asientos[0]}
-    print(valores_nuevos_con_precios)
-    with open ("data_json", "w") as archivo:
-        json.dump(valores_nuevos_con_precios, archivo, indent= 4)
-    root.destroy()
+    PANTALLA_C.destroy()
+    pagina_d(valores_nuevos_con_precios)    
 def restar_asientos(cantidad_asientos, contador_asientos, add_boton,  valores_nuevos_con_precios, comprado) -> None:
     cantidad_asientos[0] -= 1
     if cantidad_asientos[0] < 0:
@@ -158,6 +159,24 @@ def mostrar(snacks, toggle, comprado, contador_row_snacks, vm):
         toggle.config(text= "OCULTAR SNACKS")
         crear_lista_snacks(comprado, contador_row_snacks)
 
+def pagina_d (diccionario) -> None:
+    PANTALLA_D.grid()
+    count_row = 0
+    contador_total_valor = 0
+    for i in diccionario:
+        text = tkinter.Label(PANTALLA_D, text=f"{i}")
+        text.grid(row= count_row, column=0)
+        cantidad_dict = diccionario[i]["cantidad"]
+        cantidad = tkinter.Label(PANTALLA_D, text=f"x{cantidad_dict}")
+        cantidad.grid(row= count_row, column=1)
+        valor_total_dict = diccionario[i]["valor total"]
+        valor_total = tkinter.Label(PANTALLA_D, text=f" ${valor_total_dict}")
+        valor_total.grid(row= count_row, column=2)
+        contador_total_valor += diccionario[i]["valor total"]
+        count_row += 1
+    total = tkinter.Label(PANTALLA_D, text=f"TOTAL: ${contador_total_valor}")
+    total.grid(row= count_row, column=0)
+
 def main() -> None:
     BOTTOM0_IZQ_BOT.grid_forget()
     root.title("3er pagina")
@@ -170,7 +189,6 @@ def main() -> None:
     toggle = tkinter.Button(BOTTOM0_IZQ_TOP, text= "MOSTRAR SNACKS", command= lambda: mostrar(BOTTOM0_IZQ_BOT, toggle, comprado, contador_row_snacks, valores_nuevos_con_precios))
     add_boton = tkinter.Button(BOTTOM0_DER, text="FINALIZAR")
     crear_lista_pelicula(cantidad_asientos, add_boton, valores_nuevos_con_precios, comprado)
-
     toggle.grid()
     add_boton.place(relx=0.8, rely=0.8, anchor="center")
     root.mainloop()
