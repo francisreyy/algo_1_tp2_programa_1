@@ -57,7 +57,7 @@ aprovecha de las familias y se alimenta del sufrimiento de sus víctimas.
     TOP0_MID = tkinter.Label(pantalla_2, text="SALA 7",
                             font= "Helvetica 20 bold")#numero de sala
     TOP0_DER = tkinter.Button(pantalla_2, text="VOLVER ATRAS",
-                            font= "Helvetica 15 bold")#boton volver atras
+                            font= "Helvetica 15 bold", command= lambda: boton_atras_principal(pantalla_2))#boton volver atras
     IMAGEN = tkinter.PhotoImage(file= 'portada.png')
     TOP1_IZQ = tkinter.Label(pantalla_2, image= IMAGEN,
                             width=200, height=200)#portada pelicula
@@ -70,7 +70,7 @@ aprovecha de las familias y se alimenta del sufrimiento de sus víctimas.
     TOP2_IZQ = tkinter.Label(pantalla_2, text= f"GENERO: {genero}",
                             font= "Helvetica 15 bold", justify= "left")#genero
     BOTTOM = tkinter.Button(pantalla_2, text= "RESERVAR",
-                            font= "Helvetica 15 bold")#boton RESERVAR
+                            font= "Helvetica 15 bold", command= lambda: boton_reservar(pantalla_2))#boton RESERVAR
 
     TOP0_MID.grid(row=0, column=0)
     TOP0_DER.grid(row=0, column=2)
@@ -82,6 +82,22 @@ aprovecha de las familias y se alimenta del sufrimiento de sus víctimas.
     BOTTOM.grid(row= 3 ,column=1)
     pantalla_2.mainloop()
     os.remove('portada.png')
+
+
+def boton_reservar(pantalla_2)->None:
+    pantalla_2.destroy()
+
+    pantalla_reserva = tkinter.Tk()
+    etiqueta = tkinter.Label(pantalla_reserva, text= "reservado")
+    etiqueta.pack()
+    pantalla_reserva.mainloop()
+
+def boton_atras_principal(pantalla_2)->None:
+    pantalla_2.destroy()
+    pantalla_atras = tkinter.Tk()
+    etiqueta = tkinter.Label(pantalla_atras, text= "atras")
+    etiqueta.pack()
+    pantalla_atras.mainloop()
 
 
 def main()-> None:
