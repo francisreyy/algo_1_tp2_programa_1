@@ -226,8 +226,9 @@ def generar_qr(diccionario, boton_mostrar_qr) -> None:
         c.save()
     compra_total_qr = {}
     compra_total_qr[id] = diccionario
-    with open ("datos_compra.txt", "w") as datos_compra:
-        json.dump(compra_total_qr, datos_compra)
+    with open ("datos_compra", "w") as datos_compra:
+        json.dump(compra_total_qr, datos_compra, indent= 4)
+    
     diccionario.clear()
 
 def llamar_pagina_c (diccionario, dentro_pantalla) -> None:

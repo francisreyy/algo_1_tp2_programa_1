@@ -1,0 +1,16 @@
+{
+    "21.11.23_19:49/3/nombre/abasto": {
+        "doritos": {
+            "cantidad": 1,
+            "valor total": 2500.0
+        },
+        "popcorn_xl": {
+            "cantidad": 3,
+            "valor total": 9000.0
+        },
+        "nombre": {
+            "cantidad": 3,
+            "valor total": 3
+        }
+    }
+}
