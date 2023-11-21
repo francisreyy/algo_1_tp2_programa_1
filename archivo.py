@@ -87,8 +87,8 @@ def main() -> None:
     #imprimir_endpoint_json(CINES, "1", PELICULAS)
     #imprimir_endpoint_json(PELICULAS, "2")
 
-    #r = imprimir_endpoint_json(SNACKS)
-    #print(r)
+    r = imprimir_endpoint_json("/movies/2")
+    print(r)
     #print(imprimir_endpoint_json(POSTERS))
     print(asientos_disponibles(ID_CINE_ABASTO))
 
