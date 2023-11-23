@@ -632,7 +632,7 @@ def calculadora_cantsalas_cine(info_ticket: dict)->None:
         peliculas_proyec: list = peliculas_proyectadas(info_ticket)[0]['has_movies']
         cant_salas: int = len(peliculas_proyec)
         info_ticket['ASIENTOS_DISPONIBLES'][f'{nom_cine}']: list = []
-        for j in range(0, cant_salas+1):
+        for j in range(0, cant_salas):
             lista_asientos_salas.append(asientos_disponibles(i))
             info_ticket['ASIENTOS_DISPONIBLES'][f'{nom_cine}'].append(asientos_disponibles(i))
 
