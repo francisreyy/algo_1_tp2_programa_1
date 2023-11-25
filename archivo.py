@@ -10,16 +10,6 @@ from reportlab.pdfgen import canvas
 import json
 
 
-ID_CINE_CABALLITO: int = 0
-ID_CINE_ABASTO: int = 1
-ID_CINE_PUERTO_MADERO: int = 2
-ID_CINE_VILLA_DEL_PARQUE: int = 3
-ID_CINE_PALERMO: int = 4
-ID_CINE_LINIERS: int = 5
-ID_CINE_OLIVOS: int = 6
-######## UBICACIÓN DEL TÓTEM #########
-ID_UBICACION: int = ID_CINE_ABASTO
-######################################
 URL: str = "http://vps-3701198-x.dattaweb.com:4000"
 PELICULAS: str = "/movies/"
 POSTERS : str = "/posters/"
@@ -30,28 +20,27 @@ HEADERS: dict[str, str] = {"Authorization": "Bearer " + TOKEN}
 
 PRECIO_ENTRADAS: int = 2000
 
-"""
-    info_ticket: dict = {
-        'LOCALIZACION'         : ID_UBICACION,
-        #'ASIENTOS_DISPONIBLES': "",
-        'CANT_ENTRADAS'        : 0,
-        'ID_PELICULA'          : "",
-        'VALOR_CADA_ENTRADA'   : 2000,
-        'VALOR_TOTAL_ENTRADAS' : 0,
-        'SNACKS_COMPRADOS'     : [],
-        'VALOR_TOTAL_SNACKS'   : 0,
-        'PRECIO_TOTAL'         : 0
-    }
-"""
-
 #funciones para la pantalla de finalizar compra#
 
-#falta terminar#
-def generar_qr(info_ticket: dict, boton_mostrar_qr) -> None:
-    boton_mostrar_qr.config(state= "disabled")
+def pantalla_loop(info_ticket: dict)->None:
+
+    info_ticket['ASIENTOS_DISPONIBLES'][f"{nombre_cine(info_ticket['ID_CINE'])}"][info_ticket['NUM_SALA_PELICULA']-1] -= info_ticket['CANT_ENTRADAS']
+
+    ventana = tkinter.Tk()
+    ventana.title("GRACIAS!!")
+    mensaje = tkinter.Label(ventana, text= "GRACIAS POR SU COMPRA!!", font= "Helvetica 20 bold")
+    mensaje.grid(column=0, row=0)
+    boton = tkinter.Button(ventana, text= "VOLVER AL INICIO", font= "Helvetica 20 bold",
+                            command= lambda: accion_volver_bienvenida(info_ticket, ventana))
+    boton.grid(column=0, row=1)
+    ventana.mainloop()
+
+
+def generar_qr(info_ticket: dict, diccionario: dict, pantalla_final) -> None:
+   
+    pantalla_final.destroy()
     hora_actual = datetime.now().strftime("%d.%m.%y_%H:%M")
-    id = f"{hora_actual}/{info_ticket['CANT_ENTRADAS']}/{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}/{info_ticket['LOCALIZACION']}"#falta que el ultimo parametro sea el cine, y no su id
-    #print(id)
+    id = f"{hora_actual}/{info_ticket['CANT_ENTRADAS']}/{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}/{info_ticket['LOCALIZACION']}"
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
@@ -69,10 +58,13 @@ def generar_qr(info_ticket: dict, boton_mostrar_qr) -> None:
         c.drawString(100, 500, texto)
         c.save()
     compra_total_qr = {}
-    compra_total_qr[id] = diccionario
-    with open ("datos_compra.txt", "w") as datos_compra:
+    compra_total_qr[id] = diccionario    
+    print(diccionario)
+    with open ("datos_compra", "w") as datos_compra:
         json.dump(compra_total_qr, datos_compra)
+
     diccionario.clear()
+    pantalla_loop(info_ticket)
 
 
 def llamar_pagina_c (info_ticket, pantalla_final) -> None:
@@ -82,6 +74,7 @@ def llamar_pagina_c (info_ticket, pantalla_final) -> None:
     info_ticket['SNACKS_COMPRADOS'].clear()
     info_ticket['VALOR_POR_SNACKS'] = 0
     info_ticket['PRECIO_TOTAL'] = 0
+    
     pantalla_reseva(info_ticket)
 
 
@@ -93,10 +86,12 @@ def pagina_d (info_ticket, root) -> None:
     pantalla_d = tkinter.Frame(pantalla_final, width=500, height=620)
     pantalla_d.grid()
     count_row: int = 0
+    diccionario: dict = {}
 
     if len(info_ticket['SNACKS_COMPRADOS']) > 0:
         for snacks in info_ticket['SNACKS_COMPRADOS']:
             for nombre_snack in snacks:
+                diccionario[f"{nombre_snack}"] = {"cantidad": 0, "valor total": 0}
                 text = tkinter.Label(pantalla_d, text=f"{nombre_snack}")
                 text.grid(row= count_row, column=0)
                 cantidad_comprada = snacks[nombre_snack]
@@ -107,7 +102,10 @@ def pagina_d (info_ticket, root) -> None:
                 total_snack_etiqueta = tkinter.Label(pantalla_d, text=f" ${total_por_cada_snack}")
                 total_snack_etiqueta.grid(row= count_row, column=2)
                 count_row += 1
+                diccionario[f"{nombre_snack}"]["cantidad"]= cantidad_comprada
+                diccionario[f"{nombre_snack}"]["valor total"]= total_por_cada_snack
 
+    diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"] = {"cantidad": 0, "valor total": 0}
     count_row +=1 
     text = tkinter.Label(pantalla_d, text= consultar_info_pelicula(info_ticket['ID_PELICULA'],'name'))
     text.grid(row= count_row, column=0)
@@ -119,7 +117,9 @@ def pagina_d (info_ticket, root) -> None:
     total = tkinter.Label(pantalla_d, text=f"TOTAL: ${info_ticket['PRECIO_TOTAL']}")
     total.grid(row= count_row, column=0)
     count_row += 1
-    boton_mostrar_qr = tkinter.Button(pantalla_d, text= "GENERAR QR", command= lambda: generar_qr(info_ticket, boton_mostrar_qr))
+    diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["cantidad"] = info_ticket['CANT_ENTRADAS']
+    diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["valor total"] = info_ticket['VALOR_TOTAL_ENTRADAS']
+    boton_mostrar_qr = tkinter.Button(pantalla_d, text= "GENERAR QR", command= lambda: generar_qr(info_ticket, diccionario, pantalla_final))
     boton_mostrar_qr.grid(row= count_row, column=0)
     count_row += 1
     boton_atras = tkinter.Button(pantalla_d, text="VOLVER ATRÁS", command= lambda: llamar_pagina_c(info_ticket, pantalla_final))
@@ -243,9 +243,10 @@ def restar_entradas(root, info_ticket: dict, contador_asientos, add_boton) -> No
 
 def sumar_entradas(root, info_ticket: dict, contador_asientos, add_boton) -> None:
     info_ticket['CANT_ENTRADAS'] += 1
+    num_asientos: int = info_ticket['ASIENTOS_DISPONIBLES'][f"{nombre_cine(info_ticket['ID_CINE'])}"][info_ticket['NUM_SALA_PELICULA']-1]
 
-    if info_ticket['CANT_ENTRADAS'] > asientos_disponibles(ID_UBICACION):
-        info_ticket['CANT_ENTRADAS'] = asientos_disponibles(ID_UBICACION)
+    if info_ticket['CANT_ENTRADAS'] > num_asientos :
+        info_ticket['CANT_ENTRADAS'] = num_asientos
 
     contador_asientos.config(text=f"{info_ticket['CANT_ENTRADAS']}")
 
@@ -272,8 +273,10 @@ def crear_lista_pelicula(root, TOP1_DER, TOP2, info_ticket: dict, add_boton) -> 
 
     titulo_pelicula = tkinter.Label(TOP1_DER, text=f"{nombre_pelicula}")
     valor_asientos_etiqueta = tkinter.Label(TOP1_DER, text=f"{info_ticket['VALOR_CADA_ENTRADA']}$ c/u")
-    
-    asientos_disponibles_etiqueta = tkinter.Label(TOP1_DER, text=f"Asientos disponibles: {asientos_disponibles(ID_UBICACION)}")
+
+    num_asientos: int = info_ticket['ASIENTOS_DISPONIBLES'][f"{nombre_cine(info_ticket['ID_CINE'])}"][info_ticket['NUM_SALA_PELICULA']-1]
+
+    asientos_disponibles_etiqueta = tkinter.Label(TOP1_DER, text=f"Asientos disponibles: {num_asientos}") #asientos_disponibles(ID_UBICACION)
     texto =tkinter.Label(TOP2, text=f"ELIJA LA CANTIDAD DE ENTRADAS: ")
     if info_ticket['CANT_ENTRADAS'] > 0:
         add_boton.config(state= "active",command= lambda: confirmar_compra(root, info_ticket))
@@ -378,13 +381,16 @@ def creacion_pantalla(poster, info_ticket) -> None:
     duracion: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'duration')
     genero: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'gender')
     portada: str = poster
-    #nombre_pelicula: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')
+    nombre_pelicula: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')
+
+    asientos_disponibles_sala: int = info_ticket['ASIENTOS_DISPONIBLES'][f"{nombre_cine(info_ticket['ID_CINE'])}"][info_ticket['NUM_SALA_PELICULA']-1]
 
     imagen = base64.b64decode(portada)
     imagen_final = Image.open(BytesIO(imagen))
     jpg= imagen_final.convert("RGB")
     jpg.save('portada.png')
     pantalla_2 = tkinter.Tk()
+    pantalla_2.title(f"{nombre_pelicula}")
 
     TOP0_MID = tkinter.Label(pantalla_2, text= f"SALA {info_ticket['NUM_SALA_PELICULA']}",
                             font= "Helvetica 20 bold")#numero de sala
@@ -401,8 +407,11 @@ def creacion_pantalla(poster, info_ticket) -> None:
                                 font= "Helvetica 10 bold", justify= "left")#actores, director, duracion
     TOP2_IZQ = tkinter.Label(pantalla_2, text= f"GÉNERO: {genero}",
                             font= "Helvetica 15 bold", justify= "left")#genero
-    BOTTOM = tkinter.Button(pantalla_2, text= "RESERVAR",
+    
+    if asientos_disponibles_sala > 0:
+        BOTTOM = tkinter.Button(pantalla_2, text= "RESERVAR",
                             font= "Helvetica 15 bold", command= lambda: boton_reservar(pantalla_2, info_ticket))#boton RESERVAR
+    else: BOTTOM = tkinter.Label(pantalla_2, text= "ENTRADAS AGOTADAS", font= "Helvetica 15 bold")
 
     TOP0_MID.grid(row=0, column=0)
     TOP0_DER.grid(row=0, column=2)
@@ -457,7 +466,7 @@ def asientos_disponibles(id_cine: int) -> int:
     POST: devuelve un entero indicando los asientos disponibles
     """
     info_cines: list = obtener_endpoint_json(CINES)
-    info_cine: dict = info_cines[id_cine]
+    info_cine: dict = info_cines[id_cine-1]
     asientos: int = info_cine['available_seats']
 
     return int(asientos)
@@ -469,7 +478,7 @@ def nombre_cine(id_cine: int) -> str:
     POST: devuelve un string con el nombre de la ubicación
     """
     info_cines: list = obtener_endpoint_json(CINES)
-    info_cine: dict = info_cines[id_cine]
+    info_cine: dict = info_cines[id_cine-1]
     nombre_cine: str = info_cine['location']
 
     return nombre_cine.upper()
@@ -518,11 +527,16 @@ def accion_del_boton(id_pelicula_elegida: int, info_ticket: dict, pantalla_princ
     pantalla_secundaria(info_ticket)
 
 
-def accion_volver_bienvenida(info_ticket: dict, pantalla_principal)->None:
-    pantalla_principal.destroy()
+def accion_volver_bienvenida(info_ticket: dict, pantalla)->None:
+    pantalla.destroy()
     info_ticket['LOCALIZACION'] = ""
     info_ticket['ID_CINE'] = ""
     info_ticket['CANT_SALAS'] = 0
+    info_ticket['CANT_ENTRADAS'] = 0
+    info_ticket['SNACKS_COMPRADOS'].clear()
+    info_ticket['VALOR_POR_SNACKS'] = 0
+    info_ticket['PRECIO_TOTAL'] = 0
+
     bienvenida(info_ticket)
 
 
@@ -607,7 +621,7 @@ def bienvenida(info_ticket: dict)-> None:
 
     fila: int = 1
     columna: int = 0
-    for i in range(0, 7):
+    for i in range(1, 7+1):
 
         boton = tkinter.Button(frame_button, text= nombre_cine(i), bg= "gray", font= "Helvetica 40 bold", fg= "white", width= 17, height=1,
                                  command= lambda i=i: accion_ir_principal(info_ticket, pantalla_bienvenida, i))
@@ -623,7 +637,7 @@ def bienvenida(info_ticket: dict)-> None:
 
 def calculadora_cantsalas_cine(info_ticket: dict)->None:
 
-    cant_cines: int = 6
+    cant_cines: int = 7
     lista_asientos_salas: tuple = []
 
     for i in range(1, cant_cines+1):
