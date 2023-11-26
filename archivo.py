@@ -121,9 +121,9 @@ def pagina_d (info_ticket, root) -> None:
     diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["valor total"] = info_ticket['VALOR_TOTAL_ENTRADAS']
     boton_mostrar_qr = tkinter.Button(pantalla_d, text= "GENERAR QR", command= lambda: generar_qr(info_ticket, diccionario, pantalla_final))
     boton_mostrar_qr.grid(row= count_row, column=0)
-    count_row += 1
-    boton_atras = tkinter.Button(pantalla_d, text="VOLVER ATRÁS", command= lambda: llamar_pagina_c(info_ticket, pantalla_final))
-    boton_atras.grid(row= count_row)
+    #count_row += 1
+    #boton_atras = tkinter.Button(pantalla_d, text="VOLVER ATRÁS", command= lambda: llamar_pagina_c(info_ticket, pantalla_final))
+    #boton_atras.grid(row= count_row)
 
 
 #funciones para la pantalla de reserva#
