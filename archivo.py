@@ -554,7 +554,7 @@ def crear_lista_nombres_peliculas(peliculas_proyec: list) -> list:
     return nombres_peliculas
 
 
-def buscar_pelicula(entrada, info_ticket: dict) -> None:
+def buscar_pelicula(entrada, info_ticket: dict, pantalla_principal) -> None:
     peliculas_proyec: list = peliculas_proyectadas(info_ticket)[0]['has_movies']
 
     nombres_peliculas: list = crear_lista_nombres_peliculas(peliculas_proyec)
@@ -571,6 +571,12 @@ def buscar_pelicula(entrada, info_ticket: dict) -> None:
             posicion: int = nombres_peliculas.index(nombre)
             peliculas_proyec.append(copia[posicion])
 
+    info_ticket['PELICULAS_PROYECTADAS'] = peliculas_proyec
+
+    pantalla_principal.destroy()
+
+    iniciar_pantalla_principal(info_ticket)
+
 
 def peliculas_proyectadas(info_ticket: dict)-> dict:
     
@@ -585,11 +591,6 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
     por ventanas
     Muestra la pantalla principal del programa, se crea barra de búsqueda y se hacen los botones con imágenes    
     """
-    peliculas_proyec: list = peliculas_proyectadas(info_ticket)[0]['has_movies']
-    print(peliculas_proyec)
-    print(len(peliculas_proyec))
-    info_ticket['CANT_SALAS'] = len(peliculas_proyec)
-
     pantalla_principal = tkinter.Tk()
     pantalla_principal.title("Totem cine")
 
@@ -606,7 +607,7 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
     entrada = tkinter.Entry(encabezado, justify= "center")
     entrada.pack()
     
-    barra_busqueda = tkinter.Button(encabezado, text = "Buscá la película", justify= "center", command= lambda: buscar_pelicula(entrada, info_ticket))
+    barra_busqueda = tkinter.Button(encabezado, text = "Buscá la película", justify= "center", command= lambda: buscar_pelicula(entrada, info_ticket, pantalla_principal))
     barra_busqueda.pack()
 
     cuerpo_pagina = tkinter.Frame(pantalla_principal, bg= "black")
@@ -619,7 +620,7 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
     contador_sala: int = 0
 
     for i in range(1, cantidad_peliculas + 1):
-        if f"{i}" in peliculas_proyec:
+        if f"{i}" in info_ticket['PELICULAS_PROYECTADAS']:
             contador_sala +=1 
             imagen_tk = obtener_imagen_base64(i)
             imagenes.append(imagen_tk)
@@ -639,6 +640,9 @@ def accion_ir_principal(info_ticket: dict, pantalla_bienvenida, id_cine: int)->N
     pantalla_bienvenida.destroy()
     info_ticket['ID_CINE'] = id_cine
     info_ticket['LOCALIZACION'] = nombre_cine(id_cine)
+
+    info_ticket['PELICULAS_PROYECTADAS'] = peliculas_proyectadas(info_ticket)[0]['has_movies']   
+    info_ticket['CANT_SALAS'] = len(info_ticket['PELICULAS_PROYECTADAS'])
 
     iniciar_pantalla_principal(info_ticket)
 
@@ -698,10 +702,11 @@ def main() -> None:
     
     info_ticket: dict = {
         'LOCALIZACION'         : "",
-        'ID_CINE': 0,
-        'CANT_SALAS': 0,
-        'NUM_SALA_PELICULA': 0,
-        'ASIENTOS_DISPONIBLES': {},
+        'ID_CINE'              : 0,
+        'CANT_SALAS'           : 0,
+        'NUM_SALA_PELICULA'    : 0,
+        'PELICULAS_PROYECTADAS': [],
+        'ASIENTOS_DISPONIBLES' : {},
         'CANT_ENTRADAS'        : 0,
         'ID_PELICULA'          : "",
         'VALOR_CADA_ENTRADA'   : PRECIO_ENTRADAS,
