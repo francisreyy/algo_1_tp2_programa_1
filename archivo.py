@@ -121,9 +121,9 @@ def pagina_d (info_ticket, root) -> None:
     diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["valor total"] = info_ticket['VALOR_TOTAL_ENTRADAS']
     boton_mostrar_qr = tkinter.Button(pantalla_d, text= "GENERAR QR", command= lambda: generar_qr(info_ticket, diccionario, pantalla_final))
     boton_mostrar_qr.grid(row= count_row, column=0)
-    #count_row += 1
-    #boton_atras = tkinter.Button(pantalla_d, text="VOLVER ATRÁS", command= lambda: llamar_pagina_c(info_ticket, pantalla_final))
-    #boton_atras.grid(row= count_row)
+    count_row += 1
+    boton_atras = tkinter.Button(pantalla_d, text="VOLVER ATRÁS", command= lambda: llamar_pagina_c(info_ticket, pantalla_final))
+    boton_atras.grid(row= count_row)
 
 
 #funciones para la pantalla de reserva#
@@ -540,9 +540,47 @@ def accion_volver_bienvenida(info_ticket: dict, pantalla)->None:
     bienvenida(info_ticket)
 
 
+def crear_lista_nombres_peliculas(peliculas_proyec: list) -> list:
+
+    nombres_peliculas: list = []
+
+    for id_pelicula in peliculas_proyec:  
+        id: int = int(id_pelicula)
+
+        nombre_pelicula: str = consultar_info_pelicula(id, 'name')
+
+        nombres_peliculas.append(nombre_pelicula)
+ 
+    return nombres_peliculas
+
+
+def buscar_pelicula(entrada, info_ticket: dict, pantalla_principal) -> None:
+    peliculas_proyec: list = peliculas_proyectadas(info_ticket)[0]['has_movies']
+
+    nombres_peliculas: list = crear_lista_nombres_peliculas(peliculas_proyec)
+
+    copia: list = peliculas_proyec.copy()
+
+    buscado: str = entrada.get()
+    texto: str = buscado.upper()
+
+    peliculas_proyec.clear()
+
+    for nombre in nombres_peliculas:
+        if texto in nombre:
+            posicion: int = nombres_peliculas.index(nombre)
+            peliculas_proyec.append(copia[posicion])
+
+    info_ticket['PELICULAS_PROYECTADAS'] = peliculas_proyec
+
+    pantalla_principal.destroy()
+
+    iniciar_pantalla_principal(info_ticket)
+
+
 def peliculas_proyectadas(info_ticket: dict)-> dict:
     
-    info_cine: dict =obtener_endpoint_json(CINES, f"{info_ticket['ID_CINE']}", PELICULAS)
+    info_cine: dict = obtener_endpoint_json(CINES, f"{info_ticket['ID_CINE']}", PELICULAS)
 
     return info_cine
 
@@ -553,11 +591,6 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
     por ventanas
     Muestra la pantalla principal del programa, se crea barra de búsqueda y se hacen los botones con imágenes    
     """
-    peliculas_proyec: list = peliculas_proyectadas(info_ticket)[0]['has_movies']
-    print(peliculas_proyec)
-    print(len(peliculas_proyec))
-    info_ticket['CANT_SALAS'] = len(peliculas_proyec)
-
     pantalla_principal = tkinter.Tk()
     pantalla_principal.title("Totem cine")
 
@@ -571,6 +604,12 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
     texto = tkinter.Label(encabezado, text = f"{info_ticket['LOCALIZACION']} CINEMA")
     texto.pack()
 
+    entrada = tkinter.Entry(encabezado, justify= "center")
+    entrada.pack()
+    
+    barra_busqueda = tkinter.Button(encabezado, text = "Buscá la película", justify= "center", command= lambda: buscar_pelicula(entrada, info_ticket, pantalla_principal))
+    barra_busqueda.pack()
+
     cuerpo_pagina = tkinter.Frame(pantalla_principal, bg= "black")
     cuerpo_pagina.pack(expand= True, fill= "both")
 
@@ -581,7 +620,7 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
     contador_sala: int = 0
 
     for i in range(1, cantidad_peliculas + 1):
-        if f"{i}" in peliculas_proyec:
+        if f"{i}" in info_ticket['PELICULAS_PROYECTADAS']:
             contador_sala +=1 
             imagen_tk = obtener_imagen_base64(i)
             imagenes.append(imagen_tk)
@@ -601,6 +640,10 @@ def accion_ir_principal(info_ticket: dict, pantalla_bienvenida, id_cine: int)->N
     pantalla_bienvenida.destroy()
     info_ticket['ID_CINE'] = id_cine
     info_ticket['LOCALIZACION'] = nombre_cine(id_cine)
+
+    info_ticket['PELICULAS_PROYECTADAS'] = peliculas_proyectadas(info_ticket)[0]['has_movies']   
+    info_ticket['CANT_SALAS'] = len(info_ticket['PELICULAS_PROYECTADAS'])
+
     iniciar_pantalla_principal(info_ticket)
 
 
@@ -659,10 +702,11 @@ def main() -> None:
     
     info_ticket: dict = {
         'LOCALIZACION'         : "",
-        'ID_CINE': 0,
-        'CANT_SALAS': 0,
-        'NUM_SALA_PELICULA': 0,
-        'ASIENTOS_DISPONIBLES': {},
+        'ID_CINE'              : 0,
+        'CANT_SALAS'           : 0,
+        'NUM_SALA_PELICULA'    : 0,
+        'PELICULAS_PROYECTADAS': [],
+        'ASIENTOS_DISPONIBLES' : {},
         'CANT_ENTRADAS'        : 0,
         'ID_PELICULA'          : "",
         'VALOR_CADA_ENTRADA'   : PRECIO_ENTRADAS,
