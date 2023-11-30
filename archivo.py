@@ -75,6 +75,7 @@ def generar_qr(info_ticket: dict, diccionario: dict, pantalla_final) -> None:
         c.drawInlineImage("qr/codigo_qr.png", 100, 500, width=200, height=200)
         c.drawString(100, 500, texto)
         c.save()
+<<<<<<< HEAD
 
     compra_total_qr: dict = {f"{id_code}": diccionario}
 
@@ -89,6 +90,15 @@ def generar_qr(info_ticket: dict, diccionario: dict, pantalla_final) -> None:
     else:
         with open ("datos_compra.json", "w") as datos_compra:
             json.dump(compra_total_qr, datos_compra, indent= 4)
+=======
+    
+    ticket: dict = {}
+    ticket[id_code] = diccionario
+    ticket_json = json.dumps(ticket, indent=2)
+
+    with open("registro_de_compras.json", "a") as registro_compra:
+        registro_compra.write(ticket_json)
+>>>>>>> cf056b579420dfb0750f176fe635f61238e18e57
 
     diccionario.clear()
     pantalla_loop(info_ticket)
@@ -127,8 +137,13 @@ def pagina_d (info_ticket, root) -> None:
     diccionario: dict = {}
 
     diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"] = {}
+<<<<<<< HEAD
     diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["cantidad"] = info_ticket['CANT_ENTRADAS']
     diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["valor total"] = info_ticket['VALOR_TOTAL_ENTRADAS']
+=======
+    diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["Cantidad de entradas"] = info_ticket['CANT_ENTRADAS']
+    diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"]["Valor total entradas"] = info_ticket['VALOR_TOTAL_ENTRADAS']
+>>>>>>> cf056b579420dfb0750f176fe635f61238e18e57
 
     if len(info_ticket['SNACKS_COMPRADOS']) > 0:
         for snacks in info_ticket['SNACKS_COMPRADOS']:
@@ -247,6 +262,7 @@ def contadores(BOTTOM0_IZQ_BOT, info_ticket: dict, snack: str, contador_row: lis
     precio = tkinter.Label(BOTTOM0_IZQ_BOT, text=f"{snacks_dict[snack]}$")
     texto.grid(row= contador_row[0], column= 1)
     precio.grid(row= contador_row[0], column= 2)
+<<<<<<< HEAD
     cantidad_seleccionada = [0]
     cant_seleccionada =  cantidad_seleccionada
     #print(cant_seleccionada)
@@ -254,6 +270,15 @@ def contadores(BOTTOM0_IZQ_BOT, info_ticket: dict, snack: str, contador_row: lis
     mas_boton.grid(row= contador_row[0], column= 5)
     cant = tkinter.Label(BOTTOM0_IZQ_BOT, text=f"{cant_seleccionada[0]}")
     cant.grid(row= contador_row[0], column= 4)
+=======
+    locals()['cant_seleccionada_{}'.format(snack)] = [0]
+    cant_seleccionada =  locals()['cant_seleccionada_{}'.format(snack)]
+    #print(cant_seleccionada)
+    locals()['mas_boton_{}'.format(snack)] = tkinter.Button(BOTTOM0_IZQ_BOT, text="+", command= lambda: sumar_snack(cant_seleccionada, snack, cant_a_mostrar, info_ticket))
+    locals()['mas_boton_{}'.format(snack)].grid(row= contador_row[0], column= 5)
+    locals()['cant_{}'.format(snack)] = tkinter.Label(BOTTOM0_IZQ_BOT, text=f"{cant_seleccionada[0]}")
+    locals()['cant_{}'.format(snack)].grid(row= contador_row[0], column= 4)
+>>>>>>> cf056b579420dfb0750f176fe635f61238e18e57
     cant_a_mostrar = locals()['cant_{}'.format(snack)]
     menos_boton = tkinter.Button(BOTTOM0_IZQ_BOT, text="-", command= lambda: restar_snack(cant_seleccionada, snack, cant_a_mostrar, info_ticket))
     menos_boton.grid(row= contador_row[0], column= 3)
@@ -532,18 +557,28 @@ def obtener_endpoint_json(endpoint: str, id_pelicula_o_cine: str = "", pelicula_
 
     POST: Devuelve la información del endpoint en forma de lista o diccionario (depende el endpoint).
     """
+<<<<<<< HEAD
     texto: str ="""
     Se podrujo un error de
     conexion con la API
     """
+=======
+>>>>>>> cf056b579420dfb0750f176fe635f61238e18e57
     try:
         dato = requests.get(URL+ endpoint + id_pelicula_o_cine + pelicula_o_cine, headers=HEADERS)
         return dato.json()
     except requests.exceptions.RequestException as e:
         error_pagina = tkinter.Tk()
         error_pagina.grid()
+<<<<<<< HEAD
         texto_sin_conexion = tkinter.Label(error_pagina, text=texto, font= "Helvetica 40 bold", justify="center")
         texto_sin_conexion.grid(row= 0, column=0)
+=======
+        texto_sin_conexion = tkinter.Label(error_pagina, text="Se produjo un error en la conexión con la api", font= "Helvetica 10 bold")
+        texto_sin_conexion.grid(row= 0, column=0)
+        salir = tkinter.Button(error_pagina, text="SALIR",font= "Helvetica 20 bold", command= lambda: cerrar(error_pagina))
+        salir.grid(row=1, column=0)
+>>>>>>> cf056b579420dfb0750f176fe635f61238e18e57
         error_pagina.mainloop()
 
 
