@@ -30,11 +30,15 @@ def pantalla_loop(info_ticket: dict, diccionario_a_json: dict)->None:
     ventana = tkinter.Tk()
     ventana.title("GRACIAS!!")
     mensaje = tkinter.Label(ventana, text= "GRACIAS POR SU COMPRA!!", font= "Helvetica 20 bold")
-    mensaje_pdf = tkinter.Label(ventana, text= "Descargue el pdf que se encuentra en la carpeta qr para acceder al qr y el id", font= "Helvetica 10 bold")
+    mensaje_pdf = tkinter.Label(ventana, 
+                                text= "Descargue el pdf que se encuentra en la carpeta qr para acceder al qr y el id", 
+                                font= "Helvetica 10 bold")
     mensaje_pdf.grid(column=0, row=1)
     mensaje.grid(column=0, row=0)
     boton = tkinter.Button(ventana, text= "VOLVER AL INICIO", font= "Helvetica 20 bold",
-                            command= lambda: accion_volver_bienvenida(info_ticket, ventana, diccionario_a_json))
+                            command= lambda: accion_volver_bienvenida(info_ticket, 
+                                                                    ventana, 
+                                                                    diccionario_a_json))
     boton.grid(column=0, row=2)
     ventana.mainloop()
 
@@ -46,6 +50,7 @@ def cerrar(ventana) -> None:
 def generar_qr(info_ticket: dict, diccionario: dict, pantalla_final, diccionario_a_json: dict) -> None:
     pantalla_final.destroy()
     hora_actual = datetime.now().strftime("%d.%m.%y_%H:%M")
+
     id_code = f"{hora_actual}/{info_ticket['CANT_ENTRADAS']}/{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}/{info_ticket['LOCALIZACION']}"
     qr = qrcode.QRCode(
         version=1,
@@ -53,6 +58,7 @@ def generar_qr(info_ticket: dict, diccionario: dict, pantalla_final, diccionario
         box_size=10,
         border=4,
     )
+
     carpeta_qr = "qr"
     if not os.path.exists(carpeta_qr):
         os.makedirs(carpeta_qr)
@@ -80,7 +86,7 @@ def generar_qr(info_ticket: dict, diccionario: dict, pantalla_final, diccionario
     pantalla_loop(info_ticket, diccionario_a_json)
 
 
-def llamar_pagina_c (info_ticket, pantalla_final) -> None:
+def llamar_pagina_c (info_ticket: dict, pantalla_final) -> None:
 
     pantalla_final.destroy()
     info_ticket['CANT_ENTRADAS'] = 0
@@ -91,7 +97,7 @@ def llamar_pagina_c (info_ticket, pantalla_final) -> None:
     pantalla_reseva(info_ticket)
 
 
-def pagina_d (info_ticket, root, diccionario_a_json: dict) -> None:
+def pagina_d (info_ticket: dict, root, diccionario_a_json: dict) -> None:
 
     root.destroy()
     
@@ -120,7 +126,9 @@ def pagina_d (info_ticket, root, diccionario_a_json: dict) -> None:
 
     diccionario[f"{consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')}"] = {"cantidad": 0, "valor total": 0}
     count_row +=1 
-    text = tkinter.Label(pantalla_d, text= consultar_info_pelicula(info_ticket['ID_PELICULA'],'name'), font= "Helvetica 10 bold",)
+    text = tkinter.Label(pantalla_d, 
+                        text= consultar_info_pelicula(info_ticket['ID_PELICULA'],'name'), 
+                        font= "Helvetica 10 bold",)
     text.grid(row= count_row, column=0)
     cantidad_etiqueta = tkinter.Label(pantalla_d, text= f"x{info_ticket['CANT_ENTRADAS']}")
     cantidad_etiqueta.grid(row= count_row, column=1)
@@ -218,12 +226,20 @@ def contadores(BOTTOM0_IZQ_BOT, info_ticket: dict, snack: str, contador_row: lis
     locals()['cant_seleccionada_{}'.format(snack)] = [0]
     cant_seleccionada =  locals()['cant_seleccionada_{}'.format(snack)]
     #print(cant_seleccionada)
-    locals()['mas_boton_{}'.format(snack)] = tkinter.Button(BOTTOM0_IZQ_BOT, text="+", command= lambda: sumar_snack(cant_seleccionada, snack, cant_a_mostrar, info_ticket))
+    locals()['mas_boton_{}'.format(snack)] = tkinter.Button(BOTTOM0_IZQ_BOT, 
+                                                            text="+", command= lambda: sumar_snack(cant_seleccionada, 
+                                                                                                snack, 
+                                                                                                cant_a_mostrar, 
+                                                                                                info_ticket))
     locals()['mas_boton_{}'.format(snack)].grid(row= contador_row[0], column= 5)
     locals()['cant_{}'.format(snack)] = tkinter.Label(BOTTOM0_IZQ_BOT, text=f"{cant_seleccionada[0]}")
     locals()['cant_{}'.format(snack)].grid(row= contador_row[0], column= 4)
     cant_a_mostrar = locals()['cant_{}'.format(snack)]
-    locals()['menos_boton_{}'.format(snack)] = tkinter.Button(BOTTOM0_IZQ_BOT, text="-", command= lambda: restar_snack(cant_seleccionada, snack, cant_a_mostrar, info_ticket))
+    locals()['menos_boton_{}'.format(snack)] = tkinter.Button(BOTTOM0_IZQ_BOT, 
+                                                            text="-", command= lambda: restar_snack(cant_seleccionada, 
+                                                                                                    snack, 
+                                                                                                    cant_a_mostrar, 
+                                                                                                    info_ticket))
     locals()['menos_boton_{}'.format(snack)].grid(row= contador_row[0], column= 3)
 
 
@@ -237,7 +253,7 @@ def crear_lista_snacks(BOTTOM0_IZQ_BOT, info_ticket: dict) -> None:
         contador_row[0] += 1
 
 
-def restar_entradas(root, info_ticket: dict, contador_asientos, add_boton, diccionario_a_json) -> None:
+def restar_entradas(root, info_ticket: dict, contador_asientos, add_boton, diccionario_a_json: dict) -> None:
     info_ticket['CANT_ENTRADAS'] -= 1
 
     if info_ticket['CANT_ENTRADAS'] < 0:
@@ -246,12 +262,13 @@ def restar_entradas(root, info_ticket: dict, contador_asientos, add_boton, dicci
     contador_asientos.config(text=f"{info_ticket['CANT_ENTRADAS']}")
 
     if info_ticket['CANT_ENTRADAS'] > 0:
-        add_boton.config(state= "active",command= lambda: confirmar_compra(root, info_ticket, diccionario_a_json))
+        add_boton.config(state= "active",
+                        command= lambda: confirmar_compra(root, info_ticket, diccionario_a_json))
     else:
         add_boton.config(state= "disabled")
 
 
-def sumar_entradas(root, info_ticket: dict, contador_asientos, add_boton, diccionario_a_json) -> None:
+def sumar_entradas(root, info_ticket: dict, contador_asientos , add_boton, diccionario_a_json: dict) -> None:
     info_ticket['CANT_ENTRADAS'] += 1
     num_asientos: int = info_ticket['ASIENTOS_DISPONIBLES'][f"{nombre_cine(info_ticket['ID_CINE'])}"][info_ticket['NUM_SALA_PELICULA']-1]
 
@@ -261,7 +278,8 @@ def sumar_entradas(root, info_ticket: dict, contador_asientos, add_boton, diccio
     contador_asientos.config(text=f"{info_ticket['CANT_ENTRADAS']}")
 
     if info_ticket['CANT_ENTRADAS'] > 0:
-        add_boton.config(state= "active",command= lambda: confirmar_compra(root, info_ticket, diccionario_a_json))
+        add_boton.config(state= "active",
+                        command= lambda: confirmar_compra(root, info_ticket, diccionario_a_json))
     else:
         add_boton.config(state= "disabled")
 
@@ -281,12 +299,17 @@ def mostrar_snacks(snacks, toggle, info_ticket: dict) -> None:
 def crear_lista_pelicula(root, TOP1_DER, TOP2, info_ticket: dict, add_boton, diccionario_a_json: dict) -> None:
     nombre_pelicula: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')
 
-    titulo_pelicula = tkinter.Label(TOP1_DER, text=f"{nombre_pelicula}", font= "Helvetica 10 bold",)
-    valor_asientos_etiqueta = tkinter.Label(TOP1_DER, text=f"{info_ticket['VALOR_CADA_ENTRADA']}$ c/u", font= "Helvetica 10 bold",)
+    titulo_pelicula = tkinter.Label(TOP1_DER, text=f"{nombre_pelicula}", 
+                                    font= "Helvetica 10 bold",)
+    valor_asientos_etiqueta = tkinter.Label(TOP1_DER, 
+                                            text=f"{info_ticket['VALOR_CADA_ENTRADA']}$ c/u", 
+                                            font= "Helvetica 10 bold",)
 
     num_asientos: int = info_ticket['ASIENTOS_DISPONIBLES'][f"{nombre_cine(info_ticket['ID_CINE'])}"][info_ticket['NUM_SALA_PELICULA']-1]
 
-    asientos_disponibles_etiqueta = tkinter.Label(TOP1_DER, text=f"Asientos disponibles: {num_asientos}", font= "Helvetica 10 bold",) #asientos_disponibles(ID_UBICACION)
+    asientos_disponibles_etiqueta = tkinter.Label(TOP1_DER, 
+                                                text=f"Asientos disponibles: {num_asientos}", 
+                                                font= "Helvetica 10 bold",) #asientos_disponibles(ID_UBICACION)
     texto =tkinter.Label(TOP2, text=f"ELIJA LA CANTIDAD DE ENTRADAS: ")
     if info_ticket['CANT_ENTRADAS'] > 0:
         add_boton.config(state= "active",command= lambda: confirmar_compra(root, info_ticket, diccionario_a_json))
@@ -294,9 +317,17 @@ def crear_lista_pelicula(root, TOP1_DER, TOP2, info_ticket: dict, add_boton, dic
         add_boton.config(state= "disabled")
 
     boton_mas_pelicula = tkinter.Button(TOP2, text="+", 
-                                        command= lambda: sumar_entradas(root, info_ticket, contador_asientos, add_boton, diccionario_a_json))
+                                        command= lambda: sumar_entradas(root,
+                                                                        info_ticket,
+                                                                        contador_asientos,
+                                                                        add_boton,
+                                                                        diccionario_a_json))
     boton_menos_pelicula = tkinter.Button(TOP2, text="-", 
-                                        command= lambda: restar_entradas(root, info_ticket, contador_asientos, add_boton, diccionario_a_json))
+                                        command= lambda: restar_entradas(root,
+                                                                        info_ticket, 
+                                                                        contador_asientos,
+                                                                        add_boton,
+                                                                        diccionario_a_json))
     contador_asientos = tkinter.Label(TOP2, text=f"{info_ticket['CANT_ENTRADAS']}")
     titulo_pelicula.grid(row= 0, column=0)
     valor_asientos_etiqueta.grid(row= 1, column=0)
@@ -350,7 +381,9 @@ def pantalla_reseva(info_ticket: dict, diccionario_a_json: dict) -> None:
     BOTTOM0_IZQ_BOT.grid_forget()
     root.title("3er pagina")
 
-    volver_buton = tkinter.Button(TOP0, text="VOLVER", command= lambda: volver_pagina_secundaria(root, info_ticket), font= "Helvetica 20 bold",)
+    volver_buton = tkinter.Button(TOP0, text="VOLVER", 
+                                command= lambda: volver_pagina_secundaria(root, info_ticket), 
+                                font= "Helvetica 20 bold",)
     volver_buton.place(relx=0.5, rely=0.3, anchor="center")
 
     toggle = tkinter.Button(BOTTOM0_IZQ_TOP, text= "MOSTRAR SNACKS", 
@@ -381,7 +414,7 @@ def info_poster(pelicula_id: int) -> str:
     return imagen_poster
 
 
-def creacion_pantalla(poster, info_ticket, diccionario_a_json) -> None:
+def creacion_pantalla(poster, info_ticket: dict, diccionario_a_json: dict) -> None:
 
     sinopsis: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'synopsis') #muy largo, hay que hacerlo por renglones
     actores: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'actors')
@@ -403,7 +436,8 @@ def creacion_pantalla(poster, info_ticket, diccionario_a_json) -> None:
     TOP0_MID = tkinter.Label(pantalla_2, text= f"SALA {info_ticket['NUM_SALA_PELICULA']}",
                             font= "Helvetica 20 bold")#numero de sala
     TOP0_DER = tkinter.Button(pantalla_2, text="VOLVER ATRAS",
-                            font= "Helvetica 15 bold", command= lambda: boton_atras_principal(pantalla_2, info_ticket))#boton volver atras
+                            font= "Helvetica 15 bold", 
+                            command= lambda: boton_atras_principal(pantalla_2, info_ticket, diccionario_a_json))#boton volver atras
     IMAGEN = tkinter.PhotoImage(file= 'portada.png')
     TOP1_IZQ = tkinter.Label(pantalla_2, image= IMAGEN)#,
                             #width=200, height=200)# dimensiones portada
@@ -411,7 +445,8 @@ def creacion_pantalla(poster, info_ticket, diccionario_a_json) -> None:
                             width=200, height=200)
     TOP1_ARRIBA = tkinter.Label(TOP1_DER, text= f"SINOPSIS \n {sinopsis}",
                                 font= "Helvetica 10 bold", justify= "left", wraplength= 400)#sinopsis mayor a 400 más ancho, menor más angosto
-    TOP1_ABAJO = tkinter.Label(TOP1_DER, text= f"ACTORES: {actores}\nDIRECTOR: {director}\nDURACIÓN DE LA PELICULA: {duracion}",
+    TOP1_ABAJO = tkinter.Label(TOP1_DER, 
+                            text= f"ACTORES: {actores}\nDIRECTOR: {director}\nDURACIÓN DE LA PELICULA: {duracion}",
                                 font= "Helvetica 10 bold", justify= "left")#actores, director, duracion
     TOP2_IZQ = tkinter.Label(pantalla_2, text= f"GÉNERO: {genero}",
                             font= "Helvetica 15 bold", justify= "left")#genero
@@ -440,10 +475,10 @@ def boton_reservar(pantalla_2, info_ticket: dict, diccionario_a_json: dict) -> N
     pantalla_reseva(info_ticket, diccionario_a_json)
 
 
-def boton_atras_principal(pantalla_2, info_ticket: dict) -> None:
+def boton_atras_principal(pantalla_2, info_ticket: dict, diccionario_a_json: dict) -> None:
     pantalla_2.destroy()
 
-    iniciar_pantalla_principal(info_ticket)
+    iniciar_pantalla_principal(info_ticket, diccionario_a_json)
 
 
 def obtener_endpoint_json(endpoint: str, id_pelicula_o_cine: str = "", pelicula_o_cine : str = "") -> str:
@@ -458,9 +493,11 @@ def obtener_endpoint_json(endpoint: str, id_pelicula_o_cine: str = "", pelicula_
     except requests.exceptions.RequestException as e:
         error_pagina = tkinter.Tk()
         error_pagina.grid()
-        texto_sin_conexion = tkinter.Label(error_pagina, text="Se produjo un error en la conexión con la api", font= "Helvetica 10 bold")
+        texto_sin_conexion = tkinter.Label(error_pagina, text="Se produjo un error en la conexión con la api", 
+                                        font= "Helvetica 10 bold")
         texto_sin_conexion.grid(row= 0, column=0)
-        salir = tkinter.Button(error_pagina, text="SALIR",font= "Helvetica 20 bold", command= lambda: cerrar(error_pagina))
+        salir = tkinter.Button(error_pagina, text="SALIR",font= "Helvetica 20 bold", 
+                            command= lambda: cerrar(error_pagina))
         salir.grid(row=1, column=0)
         error_pagina.mainloop()
 
@@ -582,7 +619,10 @@ def iniciar_pantalla_principal(info_ticket: dict, diccionario_a_json: dict) -> N
     encabezado = tkinter.Frame(pantalla_principal, bg= "gray")
     encabezado.pack(expand = True, fill= "both")
 
-    volver_atras = tkinter.Button(encabezado, text = "Volver Atras", command= lambda: accion_volver_bienvenida(info_ticket, pantalla_principal))
+    volver_atras = tkinter.Button(encabezado, text = "Volver Atras", 
+                                command= lambda: accion_volver_bienvenida(info_ticket, 
+                                                                        pantalla_principal,
+                                                                        diccionario_a_json))
     volver_atras.pack()
     texto = tkinter.Label(encabezado, text = f"{info_ticket['LOCALIZACION']} CINEMA")
     texto.pack()
@@ -590,7 +630,10 @@ def iniciar_pantalla_principal(info_ticket: dict, diccionario_a_json: dict) -> N
     entrada = tkinter.Entry(encabezado, justify= "center")
     entrada.pack()
     
-    barra_busqueda = tkinter.Button(encabezado, text = "Buscá la película", justify= "center", command= lambda: buscar_pelicula(entrada, info_ticket, pantalla_principal, diccionario_a_json))
+    barra_busqueda = tkinter.Button(encabezado, text = "Buscá la película", justify= "center", 
+                                    command= lambda: buscar_pelicula(entrada, info_ticket, 
+                                                                    pantalla_principal,
+                                                                    diccionario_a_json))
     barra_busqueda.pack()
 
     cuerpo_pagina = tkinter.Frame(pantalla_principal, bg= "black")
@@ -607,9 +650,17 @@ def iniciar_pantalla_principal(info_ticket: dict, diccionario_a_json: dict) -> N
             contador_sala +=1 
             imagen_tk = obtener_imagen_base64(i)
             imagenes.append(imagen_tk)
-            boton = tkinter.Button(cuerpo_pagina, image = imagen_tk, command= lambda i=i, contador_sala=contador_sala: accion_del_boton(i, info_ticket, pantalla_principal, contador_sala, diccionario_a_json))
+            boton = tkinter.Button(cuerpo_pagina, image = imagen_tk, width=140, height=180,
+                                    command= lambda i=i, 
+                                    contador_sala=contador_sala: accion_del_boton(i, 
+                                                                                info_ticket, 
+                                                                                pantalla_principal, 
+                                                                                contador_sala, 
+                                                                                diccionario_a_json))
+            nombre = consultar_info_pelicula(i, 'name')
+            nombre_pelicula = tkinter.Label(cuerpo_pagina, text=f"{nombre}")
+            nombre_pelicula.grid(column= columna, row = fila)
             boton.grid(column= columna, row = fila)
-
             columna += 1
 
         if columna > 5:
@@ -667,7 +718,6 @@ def accion_ir_principal(info_ticket: dict, pantalla_bienvenida, id_cine: int, di
 
 def bienvenida(info_ticket: dict, diccionario_a_json: dict)-> None:
 
-    
     mensaje: str = """
     BIENVENIDO, SELECCIONE EL 
     COMPLEJO PARA INICIAR UNA COMPRA
@@ -676,7 +726,7 @@ def bienvenida(info_ticket: dict, diccionario_a_json: dict)-> None:
     pantalla_bienvenida.title("BIENVENIDO")
     pantalla_bienvenida.config(bg="black")
     mensaje = tkinter.Label(pantalla_bienvenida, text= mensaje,
-                             font= "Helvetica 20 bold")
+                            font= "Helvetica 20 bold")
     mensaje.grid(row=0)
     frame_button = tkinter.Frame(pantalla_bienvenida, bg="black")
     frame_button.grid(row=1)
@@ -685,8 +735,12 @@ def bienvenida(info_ticket: dict, diccionario_a_json: dict)-> None:
     columna: int = 0
     for i in range(1, 7+1):
 
-        boton = tkinter.Button(frame_button, text= nombre_cine(i), bg= "gray", font= "Helvetica 40 bold", fg= "white", width= 17, height=1,
-                                 command= lambda i=i: accion_ir_principal(info_ticket, pantalla_bienvenida, i, diccionario_a_json))
+        boton = tkinter.Button(frame_button, text= nombre_cine(i), bg= "gray",
+                                font= "Helvetica 40 bold", fg= "white", width= 17, height=1,
+                                command= lambda i=i: accion_ir_principal(info_ticket, 
+                                                                        pantalla_bienvenida, 
+                                                                        i, 
+                                                                        diccionario_a_json))
         boton.grid(column= columna, row = fila)
         columna += 1
 

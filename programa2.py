@@ -29,7 +29,7 @@ def informacion_qr_en_txt(id_ingresado: str, total: int) -> None:
     with open("registro.txt", "a") as archivo:
         archivo.write(cadena)
 
-def mostrar_compra(compra: dict, pantalla_activa, id_ingresado: str) -> None:
+def mostrar_compra(compra: dict, id_ingresado: str) -> None:
     """
     POST: devuelve, en pantalla, los datos de la compra del programa 1
     """
@@ -72,7 +72,7 @@ def obtener_id(input_id, pantalla_id, texto) -> None:
             validacion: bool = verificar_id_qr_no_sean_repetidos(pantalla_id, id_ingresado)
             hay_id = True
             if validacion == True:
-                mostrar_compra(compra, pantalla_id, id_ingresado)
+                mostrar_compra(compra, id_ingresado)
     if hay_id == False:
         if texto.winfo_ismapped():
             pass
@@ -100,9 +100,12 @@ def verificar_id_qr_no_sean_repetidos(pantalla, id_ingresado: str) -> bool:
             if id_qr == id_ingresado:
                 pantalla_err = tkinter.Frame(root)
                 pantalla_err.grid()
-                texto_err = tkinter.Label(pantalla_err, text="este id ya ha sido ingresado", font= "Helvetica 10 bold")
+                texto_err = tkinter.Label(pantalla_err, text="este id ya ha sido ingresado", 
+                                        font= "Helvetica 10 bold")
                 texto_err.grid(row=0,column=0)
-                volver_inicio = tkinter.Button(pantalla_err, text= "volver al inicio",font= "Helvetica 20 bold", command=lambda:volver_menu(pantalla_err))
+                volver_inicio = tkinter.Button(pantalla_err, text= "volver al inicio",
+                                            font= "Helvetica 20 bold", 
+                                            command=lambda:volver_menu(pantalla_err))
                 volver_inicio.grid(row=1, column=0)
                 validacion = False
     return validacion
@@ -122,9 +125,13 @@ def ingrese_id (menu) -> None:
     input_id = tkinter.Entry(pantalla_id, width=80)
     input_id.grid(row= 0)
     texto = tkinter.Label(pantalla_id, text="El id ingresado no existe", font= "Helvetica 10 bold")
-    boton_ingresar = tkinter.Button(pantalla_id, text="INGRESAR",font= "Helvetica 20 bold", command= lambda:obtener_id(input_id, pantalla_id, texto))
+    boton_ingresar = tkinter.Button(pantalla_id, text="INGRESAR",
+                                    font= "Helvetica 20 bold", 
+                                    command= lambda:obtener_id(input_id, pantalla_id, texto))
     boton_ingresar.grid(row= 1)
-    volver_inicio = tkinter.Button(pantalla_id, text="menu",font= "Helvetica 20 bold",command= lambda: volver_menu(pantalla_id))
+    volver_inicio = tkinter.Button(pantalla_id, text="menu",
+                                font= "Helvetica 20 bold",
+                                command= lambda: volver_menu(pantalla_id))
     volver_inicio.grid(row=2)
 
 def compra_qr (id_ingresado, pantalla_qr) -> None:
@@ -138,13 +145,18 @@ def compra_qr (id_ingresado, pantalla_qr) -> None:
             hay_id = True
             validacion: bool = verificar_id_qr_no_sean_repetidos(pantalla_qr, id_ingresado)
             if validacion == True:
-                mostrar_compra(compra_qr, pantalla_qr, id_ingresado)
+                mostrar_compra(compra_qr, id_ingresado)
     if hay_id == False:
         pantalla_qr.destroy()
         pantalla_error_qr_inval = tkinter.Frame(root)
-        mensaje_err = tkinter.Label(pantalla_error_qr_inval, text= "El qr ingresado no está registrado", font= "Helvetica 10 bold")
+        mensaje_err = tkinter.Label(pantalla_error_qr_inval, 
+                                    text= "El qr ingresado no está registrado", 
+                                    font= "Helvetica 10 bold")
         mensaje_err.grid(row=0)
-        volver_inicio = tkinter.Button(pantalla_error_qr_inval, text="menu", font= "Helvetica 20 bold", command=lambda:volver_menu(pantalla_error_qr_inval))
+        volver_inicio = tkinter.Button(pantalla_error_qr_inval, 
+                                        text="menu",
+                                        font= "Helvetica 20 bold", 
+                                        command=lambda:volver_menu(pantalla_error_qr_inval))
         volver_inicio.grid(row=1)
         pantalla_error_qr_inval.grid()
 
@@ -172,7 +184,9 @@ def leer_qr(menu) -> None:
             cv2.destroyAllWindows()
             break 
         else:
-            cv2.putText(img, "presione la tecla 's' para cerrar ", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 2, cv2.LINE_AA)
+            cv2.putText(img, "presione la tecla 's' para cerrar ", 
+                        (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, 
+                        (255, 255, 255), 2, cv2.LINE_AA)
             cv2.imshow("SCANEA EL QR DE SU COMPRA", img)
     capturar.release()
 
@@ -182,20 +196,10 @@ def menu() -> None:
     text = tkinter.Label(menu, text="¿Como desea ingresar?", font= "Helvetica 20 bold")
     boton_qr_id = tkinter.Button(menu, text="ID", font= "Helvetica 10 bold", command= lambda: ingrese_id(menu))
     boton_qr = tkinter.Button(menu, text="WebCam", font= "Helvetica 10 bold", command=lambda: leer_qr(menu))
-    boton_reiniciar = tkinter.Button(menu, text="Reiniciar los datos registrados", command=reiniciar_txt)
     text.grid()
     boton_qr_id.grid()
     boton_qr.grid()
-    boton_reiniciar.grid()
 
-
-def reiniciar_txt() -> None:
-    archivo_a_borrar = "registro.txt" 
-    try:
-        os.remove(archivo_a_borrar)
-        print(f"El archivo {archivo_a_borrar} ha sido borrado exitosamente.")
-    except OSError as e:
-        print(f"No se pudo borrar el archivo {archivo_a_borrar}. Error: {e}")
 def main() -> None:
     root.title("INGRESE COMPRA")
     menu()
