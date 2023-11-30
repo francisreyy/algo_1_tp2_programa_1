@@ -53,6 +53,12 @@ def generar_qr(info_ticket: dict, diccionario: dict, pantalla_final, diccionario
         box_size=10,
         border=4,
     )
+    carpeta_qr = "qr"
+    if not os.path.exists(carpeta_qr):
+        os.makedirs(carpeta_qr)
+        print(f"Se ha creado la carpeta '{carpeta_qr}'.")
+    else:
+        print(f"La carpeta '{carpeta_qr}' ya existe.")
     qr.add_data(id_code)
     qr.make(fit=True)
     qr_img = qr.make_image(fill_color="black", back_color="white")
