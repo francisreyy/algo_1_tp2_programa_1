@@ -34,10 +34,15 @@ def pantalla_loop(info_ticket: dict) -> None:
     ventana.title("GRACIAS!!")
     mensaje = tkinter.Label(ventana, text= "GRACIAS POR SU COMPRA!!", font= "Helvetica 20 bold")
     mensaje.grid(column=0, row=0)
+    adv:str = """ Acuérdese de guardar el .pdf de la carpeta 'qr' 
+    para poder acceder al QR y el ID de su compra."""
+    mensaje_adv = tkinter.Label(ventana, text= adv, font= "Helvetica 10 bold", justify='center')
+    mensaje.grid(column=0, row=0)
+    mensaje_adv.grid(column=0, row=1)
     boton = tkinter.Button(ventana, text= "VOLVER AL INICIO", font= "Helvetica 20 bold",
                             command= lambda: accion_volver_bienvenida(info_ticket, ventana))
-    boton.grid(column=0, row=1)
-  
+    boton.grid(column=0, row=2)
+
     ventana.mainloop()
 
 
@@ -118,8 +123,7 @@ def pagina_d (info_ticket, root) -> None:
     root.destroy()
     
     pantalla_final = tkinter.Tk()
-    
-    #pantalla_d = tkinter.Frame(pantalla_final, width=500, height=620)
+
     pantalla_d = tkinter.Frame(pantalla_final)
     pantalla_d.grid()
 
@@ -158,7 +162,7 @@ def pagina_d (info_ticket, root) -> None:
     total = tkinter.Label(pantalla_d, text=f"TOTAL: ${info_ticket['PRECIO_TOTAL']}")
     total.grid(row= count_row, column=0)
     count_row += 1
-   
+
     boton_mostrar_qr = tkinter.Button(pantalla_d, text= "GENERAR QR",  command= lambda: generar_qr(info_ticket, diccionario, pantalla_final))
     boton_mostrar_qr.grid(row= count_row, column=0)
 
@@ -239,27 +243,24 @@ def restar_snack(cantidad_seleccionada: list, nombre_snack: str, cant_a_mostrar,
     cant_a_mostrar.config( text= f"{cantidad_seleccionada[0]}")
 
 
-def contadores(BOTTOM0_IZQ_BOT, info_ticket: dict, snack: str, contador_row: list, snacks_dict: list) -> None:
+def contadores(bottom0_izq_bot, info_ticket: dict, snack: str, contador_row: list, snacks_dict: list) -> None:
     """
     PRE: se encarga de la creacion de los botones "+" y "-" de cada snack.
     """
-    texto = tkinter.Label(BOTTOM0_IZQ_BOT, text=f"{snack}")
-    precio = tkinter.Label(BOTTOM0_IZQ_BOT, text=f"{snacks_dict[snack]}$")
+    texto = tkinter.Label(bottom0_izq_bot, text=f"{snack}")
+    precio = tkinter.Label(bottom0_izq_bot, text=f"{snacks_dict[snack]}$")
     texto.grid(row= contador_row[0], column= 1)
     precio.grid(row= contador_row[0], column= 2)
     cantidad_seleccionada = [0]
-    cant_seleccionada =  cantidad_seleccionada
-    #print(cant_seleccionada)
-    mas_boton = tkinter.Button(BOTTOM0_IZQ_BOT, text="+", command= lambda: sumar_snack(cant_seleccionada, snack, cant_a_mostrar, info_ticket))
+    mas_boton = tkinter.Button(bottom0_izq_bot, text="+", command= lambda: sumar_snack(cantidad_seleccionada, snack, cant, info_ticket))
     mas_boton.grid(row= contador_row[0], column= 5)
-    cant = tkinter.Label(BOTTOM0_IZQ_BOT, text=f"{cant_seleccionada[0]}")
+    cant = tkinter.Label(bottom0_izq_bot, text=f"{cantidad_seleccionada[0]}")
     cant.grid(row= contador_row[0], column= 4)
-    cant_a_mostrar = locals()['cant_{}'.format(snack)]
-    menos_boton = tkinter.Button(BOTTOM0_IZQ_BOT, text="-", command= lambda: restar_snack(cant_seleccionada, snack, cant_a_mostrar, info_ticket))
+    menos_boton = tkinter.Button(bottom0_izq_bot, text="-", command= lambda: restar_snack(cantidad_seleccionada, snack, cant, info_ticket))
     menos_boton.grid(row= contador_row[0], column= 3)
 
 
-def crear_lista_snacks(BOTTOM0_IZQ_BOT, info_ticket: dict) -> None:
+def crear_lista_snacks(bottom_izq_bot, info_ticket: dict) -> None:
     """
     PRE: crea la lista de snacks disponibles mediante la API y los muestra.
     """
@@ -268,7 +269,7 @@ def crear_lista_snacks(BOTTOM0_IZQ_BOT, info_ticket: dict) -> None:
     contador_row: list = [0]
 
     for snack in snacks_dict:
-        contadores(BOTTOM0_IZQ_BOT, info_ticket, snack, contador_row, snacks_dict)
+        contadores(bottom_izq_bot, info_ticket, snack, contador_row, snacks_dict)
         contador_row[0] += 1
 
 
@@ -327,29 +328,29 @@ def mostrar(snacks, toggle, info_ticket: dict) -> None:
         crear_lista_snacks(snacks, info_ticket)
 
 
-def crear_lista_pelicula(root, TOP1_DER, TOP2, info_ticket: dict, add_boton) -> None:
+def crear_lista_pelicula(root, top1_der, top2, info_ticket: dict, add_boton) -> None:
     """
     PRE: genera la parte superior de la pantalla de reserva, con la informacion como nombre de la pelicula, valor de las entradas,
     ubicacion, etc, genera los botones para sumar/restar entradas.
     """
 
     nombre_pelicula: str = consultar_info_pelicula(info_ticket['ID_PELICULA'],'name')
-    titulo_pelicula = tkinter.Label(TOP1_DER, text=f"{nombre_pelicula}")
-    valor_asientos_etiqueta = tkinter.Label(TOP1_DER, text=f"{info_ticket['VALOR_CADA_ENTRADA']}$ c/u")
+    titulo_pelicula = tkinter.Label(top1_der, text=f"{nombre_pelicula}")
+    valor_asientos_etiqueta = tkinter.Label(top1_der, text=f"{info_ticket['VALOR_CADA_ENTRADA']}$ c/u")
     num_asientos: int = info_ticket['ASIENTOS_DISPONIBLES'][f"{nombre_cine(info_ticket['ID_CINE'])}"][info_ticket['NUM_SALA_PELICULA']-1]
-    asientos_disponibles_etiqueta = tkinter.Label(TOP1_DER, text=f"Asientos disponibles: {num_asientos}") #asientos_disponibles(ID_UBICACION)
-    texto =tkinter.Label(TOP2, text=f"ELIJA LA CANTIDAD DE ENTRADAS: ")
+    asientos_disponibles_etiqueta = tkinter.Label(top1_der, text=f"Asientos disponibles: {num_asientos}") #asientos_disponibles(ID_UBICACION)
+    texto =tkinter.Label(top2, text=f"ELIJA LA CANTIDAD DE ENTRADAS: ")
 
     if info_ticket['CANT_ENTRADAS'] > 0:
         add_boton.config(state= "active",command= lambda: confirmar_compra(root, info_ticket))
     else:
         add_boton.config(state= "disabled")
 
-    boton_mas_pelicula = tkinter.Button(TOP2, text="+", 
+    boton_mas_pelicula = tkinter.Button(top2, text="+", 
                                         command= lambda: sumar_entradas(root, info_ticket, contador_asientos, add_boton))
-    boton_menos_pelicula = tkinter.Button(TOP2, text="-", 
+    boton_menos_pelicula = tkinter.Button(top2, text="-", 
                                         command= lambda: restar_entradas(root, info_ticket, contador_asientos, add_boton))
-    contador_asientos = tkinter.Label(TOP2, text=f"{info_ticket['CANT_ENTRADAS']}")
+    contador_asientos = tkinter.Label(top2, text=f"{info_ticket['CANT_ENTRADAS']}")
     titulo_pelicula.grid(row= 0, column=0)
     valor_asientos_etiqueta.grid(row= 1, column=0)
     asientos_disponibles_etiqueta.grid(row=2, column=0)
@@ -383,37 +384,38 @@ def pantalla_reseva(info_ticket: dict) -> None:
     root = tkinter.Tk()
 
     pantalla_c = tkinter.Frame(root, width=500, height=620)
-    TOP0 = tkinter.Frame(pantalla_c, width=500, height=100)
-    TOP1 = tkinter.Frame(pantalla_c, width=500, height=150)
-    TOP1_IZQ = tkinter.Frame(TOP1, width=200, height=150)
-    TOP1_DER = tkinter.Frame(TOP1, width=300, height=150)
-    TOP2 = tkinter.Frame(pantalla_c, width=500, height=70)
-    BOTTOM0 = tkinter.Frame(pantalla_c, width=500, height=300)
-    BOTTOM0_IZQ = tkinter.Frame(BOTTOM0 , width=200, height=300)
-    BOTTOM0_IZQ_TOP = tkinter.Frame(BOTTOM0_IZQ, width=200, height=50)
-    BOTTOM0_IZQ_BOT = tkinter.Frame(BOTTOM0_IZQ, width=200, height=250)
-    BOTTOM0_DER = tkinter.Frame(BOTTOM0, width=300, height=300)
+    top0 = tkinter.Frame(pantalla_c, width=500, height=100)
+    top1 = tkinter.Frame(pantalla_c, width=500, height=150)
+    top1_izq = tkinter.Frame(top1, width=200, height=150)
+    top1_der = tkinter.Frame(top1, width=300, height=150)
+    top2 = tkinter.Frame(pantalla_c, width=500, height=70)
+    bottom0 = tkinter.Frame(pantalla_c, width=500, height=300)
+    bottom0_izq = tkinter.Frame(bottom0 , width=200, height=300)
+    bottom0_izq_top = tkinter.Frame(bottom0_izq, width=200, height=50)
+    botttom0_izq_bot = tkinter.Frame(bottom0_izq, width=200, height=250)
+    bottom0_der = tkinter.Frame(bottom0, width=300, height=300)
     pantalla_c.grid()
-    TOP0.grid(row=0)
-    TOP1.grid(row=1)
-    TOP1_IZQ.grid(row= 0, column=0)
-    TOP1_DER.grid(row= 0, column=1)
-    TOP2.grid(row=2)
-    BOTTOM0.grid(row= 3)
-    BOTTOM0_IZQ.grid(row= 0 ,column=0)
-    BOTTOM0_IZQ_TOP.grid(row= 0 ,column=0)
-    BOTTOM0_IZQ_BOT.grid(row= 1 ,column=0)
-    BOTTOM0_DER.grid(row= 0, column=1)
-    BOTTOM0_IZQ_BOT.grid_forget()
+    top0.grid(row=0)
+    top1.grid(row=1)
+    top1_izq.grid(row= 0, column=0)
+    top1_der.grid(row= 0, column=1)
+    top2.grid(row=2)
+    bottom0.grid(row= 3)
+    bottom0_izq.grid(row= 0 ,column=0)
+    bottom0_izq_top.grid(row= 0 ,column=0)
+    botttom0_izq_bot.grid(row= 1 ,column=0)
+    bottom0_der.grid(row= 0, column=1)
+    botttom0_izq_bot.grid_forget()
 
     root.title("3er pagina")
 
-    volver_buton = tkinter.Button(TOP0, text="VOLVER", command= lambda: volver_pagina_secundaria(root, info_ticket))
+    volver_buton = tkinter.Button(top0, text="VOLVER", command= lambda: volver_pagina_secundaria(root, info_ticket))
     volver_buton.place(relx=0.5, rely=0.3, anchor="center")
 
-    toggle = tkinter.Button(BOTTOM0_IZQ_TOP, text= "MOSTRAR SNACKS", command= lambda: mostrar(BOTTOM0_IZQ_BOT, toggle, info_ticket))
-    add_boton = tkinter.Button(BOTTOM0_DER, text="FINALIZAR")
-    crear_lista_pelicula(root, TOP1_DER, TOP2, info_ticket, add_boton)
+    toggle = tkinter.Button(bottom0_izq_top, text= "MOSTRAR SNACKS", 
+                            command= lambda: mostrar(botttom0_izq_bot, toggle, info_ticket))
+    add_boton = tkinter.Button(bottom0_der, text="FINALIZAR")
+    crear_lista_pelicula(root, top1_der, top2, info_ticket, add_boton)
     toggle.grid()
     add_boton.place(relx=0.8, rely=0.8, anchor="center")
     root.mainloop()
@@ -462,35 +464,37 @@ def creacion_pantalla(poster: str, info_ticket: dict) -> None:
     pantalla_2 = tkinter.Tk()
     pantalla_2.title(f"{nombre_pelicula}")
 
-    TOP0_MID = tkinter.Label(pantalla_2, text= f"SALA {info_ticket['NUM_SALA_PELICULA']}",
+    top0_mid = tkinter.Label(pantalla_2, text= f"SALA {info_ticket['NUM_SALA_PELICULA']}",
                             font= "Helvetica 20 bold")#numero de sala
-    TOP0_DER = tkinter.Button(pantalla_2, text="VOLVER ATRAS",
-                            font= "Helvetica 15 bold", command= lambda: boton_atras_principal(pantalla_2, info_ticket))#boton volver atras
-    IMAGEN = tkinter.PhotoImage(file= 'portada.png')
-    TOP1_IZQ = tkinter.Label(pantalla_2, image= IMAGEN)#,
+    top0_der = tkinter.Button(pantalla_2, text="VOLVER ATRAS",
+                            font= "Helvetica 15 bold", 
+                            command= lambda: boton_atras_principal(pantalla_2, info_ticket))#boton volver atras
+    imagen = tkinter.PhotoImage(file= 'portada.png')
+    top1_izq = tkinter.Label(pantalla_2, image= imagen)#,
                             #width=200, height=200)# dimensiones portada
-    TOP1_DER = tkinter.Frame(pantalla_2,
+    top1_der = tkinter.Frame(pantalla_2,
                             width=200, height=200)
-    TOP1_ARRIBA = tkinter.Label(TOP1_DER, text= f"SINOPSIS \n {sinopsis}",
+    top1_arriba = tkinter.Label(top1_der, text= f"SINOPSIS \n {sinopsis}",
                                 font= "Helvetica 10 bold", justify= "left", wraplength= 400)#sinopsis mayor a 400 más ancho, menor más angosto
-    TOP1_ABAJO = tkinter.Label(TOP1_DER, text= f"ACTORES: {actores}\nDIRECTOR: {director}\nDURACIÓN DE LA PELICULA: {duracion}",
+    top1_abajo = tkinter.Label(top1_der, 
+                                text= f"ACTORES: {actores}\nDIRECTOR: {director}\nDURACIÓN DE LA PELICULA: {duracion}",
                                 font= "Helvetica 10 bold", justify= "left")#actores, director, duracion
-    TOP2_IZQ = tkinter.Label(pantalla_2, text= f"GÉNERO: {genero}",
+    top2_izq = tkinter.Label(pantalla_2, text= f"GÉNERO: {genero}",
                             font= "Helvetica 15 bold", justify= "left")#genero
     
     if asientos_disponibles_sala > 0:
-        BOTTOM = tkinter.Button(pantalla_2, text= "RESERVAR",
+        bottom = tkinter.Button(pantalla_2, text= "RESERVAR",
                             font= "Helvetica 15 bold", command= lambda: boton_reservar(pantalla_2, info_ticket))#boton RESERVAR
-    else: BOTTOM = tkinter.Label(pantalla_2, text= "ENTRADAS AGOTADAS", font= "Helvetica 15 bold")
+    else: bottom = tkinter.Label(pantalla_2, text= "ENTRADAS AGOTADAS", font= "Helvetica 15 bold")
 
-    TOP0_MID.grid(row=0, column=0)
-    TOP0_DER.grid(row=0, column=2)
-    TOP1_IZQ.grid(row= 1, column=0)
-    TOP1_DER.grid(row=1, column=1)
-    TOP1_ARRIBA.grid(row= 0, column=0)
-    TOP1_ABAJO.grid(row=1, column=0)
-    TOP2_IZQ.grid(row=2, column=0)
-    BOTTOM.grid(row= 3 ,column=1)
+    top0_mid.grid(row=0, column=0)
+    top0_der.grid(row=0, column=2)
+    top1_izq.grid(row= 1, column=0)
+    top1_der.grid(row=1, column=1)
+    top1_arriba.grid(row= 0, column=0)
+    top1_abajo.grid(row=1, column=0)
+    top2_izq.grid(row=2, column=0)
+    bottom.grid(row= 3 ,column=1)
     pantalla_2.mainloop()
     os.remove('portada.png')
 
@@ -719,14 +723,14 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
     encabezado = tkinter.Frame(pantalla_principal, bg= "gray")
     encabezado.pack(expand = True, fill= "both")
     volver_atras = tkinter.Button(encabezado, text = "Volver Atras",
-                                   command= lambda: accion_volver_bienvenida(info_ticket, pantalla_principal))
+                                    command= lambda: accion_volver_bienvenida(info_ticket, pantalla_principal))
     volver_atras.pack()
     texto = tkinter.Label(encabezado, text = f"{info_ticket['LOCALIZACION']} CINEMA")
     texto.pack()
     entrada = tkinter.Entry(encabezado, justify= "center")
     entrada.pack()
     barra_busqueda = tkinter.Button(encabezado, text = "Buscá la película", justify= "center",
-                                     command= lambda: buscar_pelicula(entrada, info_ticket, pantalla_principal))
+                                    command= lambda: buscar_pelicula(entrada, info_ticket, pantalla_principal))
     barra_busqueda.pack()
     cuerpo_pagina = tkinter.Frame(pantalla_principal, bg= "black")
     cuerpo_pagina.pack(expand= True, fill= "both")
@@ -747,7 +751,11 @@ def iniciar_pantalla_principal(info_ticket: dict) -> None:
                 contador_sala +=1 
                 imagen_tk = obtener_imagen_base64(i)
                 imagenes.append(imagen_tk)
-                boton = tkinter.Button(cuerpo_pagina, image = imagen_tk, command= lambda i=i, contador_sala=contador_sala: accion_del_boton(i, info_ticket, pantalla_principal, contador_sala))
+                boton = tkinter.Button(cuerpo_pagina, image = imagen_tk, width= 150, height=180,
+                                    command= lambda i=i, contador_sala=contador_sala: accion_del_boton(i, 
+                                                                                                    info_ticket, 
+                                                                                                    pantalla_principal, 
+                                                                                                    contador_sala))
                 boton.grid(column= columna, row = fila)
                 columna += 1
 
@@ -787,7 +795,7 @@ def bienvenida(info_ticket: dict) -> None:
     pantalla_bienvenida.title("BIENVENIDO")
     pantalla_bienvenida.config(bg="black")
     mensaje = tkinter.Label(pantalla_bienvenida, text= mensaje,
-                             font= "Helvetica 20 bold")
+                            font= "Helvetica 20 bold")
     mensaje.grid(row=0)
     frame_button = tkinter.Frame(pantalla_bienvenida, bg="black")
     frame_button.grid(row=1)
@@ -796,8 +804,9 @@ def bienvenida(info_ticket: dict) -> None:
     columna: int = 0
     for i in range(1, 7+1):
 
-        boton = tkinter.Button(frame_button, text= nombre_cine(i), bg= "gray", font= "Helvetica 40 bold", fg= "white", width= 17, height=1,
-                                 command= lambda i=i: accion_ir_principal(info_ticket, pantalla_bienvenida, i))
+        boton = tkinter.Button(frame_button, text= nombre_cine(i), bg= "gray", font= "Helvetica 40 bold", 
+                                fg= "white", width= 17, height=1,
+                                command= lambda i=i: accion_ir_principal(info_ticket, pantalla_bienvenida, i))
         boton.grid(column= columna, row = fila)
         columna += 1
         
@@ -829,13 +838,11 @@ def calculadora_cantsalas_cine(info_ticket: dict)->None:
             lista_asientos_salas.append(asientos_disponibles(i))
             info_ticket['ASIENTOS_DISPONIBLES'][f'{nom_cine}'].append(asientos_disponibles(i))
 
-    #print(info_ticket['ASIENTOS_DISPONIBLES'])
-
 
 #MAIN#
 
 def main() -> None:
-   
+
     info_ticket: dict = {
         'LOCALIZACION'         : "",
         'ID_CINE'              : 0,
